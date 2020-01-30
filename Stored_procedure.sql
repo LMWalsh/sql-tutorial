@@ -1,0 +1,1 @@
+exec SalesRangeByCity @lowsales = 40000, @highsales = 70000;
