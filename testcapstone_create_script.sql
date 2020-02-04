@@ -116,7 +116,38 @@ select r.Id, Sum(Quantity * Price) as Total from Requests r
 	join Products p on p.id = rl.ProductId
 	group by r.Id  
 
-select Requests set Total = (select r.Id, Sum(Quantity * Price) as Total from Requests r
-	join RequestLine rl on r.id = rl.RequestId
-	join Products p on p.id = rl.ProductId
-	group by r.Id)  
+--update Requests set Total = (select Requests.Id, Sum(RequestLine.Quantity * Products.Price) as Total from Requests r)
+	--join RequestLine rl on r.id = rl.RequestId
+	--join Products p on p.id = rl.ProductId
+	--group by r.Id  
+
+
+Update Requests  set Total =
+(Select sum(rl.Quantity * p.Price) as 'Request Total'
+	from Requests r
+	join Requestline rl
+		on rl.RequestId = r.Id
+	join Products p
+		on p.ID =rl.ProductId
+	Where r.Description = 'Echo')
+	where description = 'Echo';
+	go
+
+Create Procedure UpdateRequestTotal
+
+	@RequestId int
+AS
+BEGIN
+-- calculate total for request
+	SET NOCOUNT ON
+		Update Requests  set Total =
+	(Select sum(rl.Quantity * p.Price) as 'Request Total'
+		from Requests r
+		join Requestline rl
+			on rl.RequestId = r.Id
+		join Products p
+			on p.ID =rl.ProductId
+		Where r.id = @RequestId)
+		where id = @RequestId;
+END
+	go
